@@ -151,17 +151,21 @@ try {
         
             # --- AzVMExtension (AADLoginForWindows)
             "Setting AzVMExtension (AADLoginForWindows)... " | Out-Host
-            Set-AzVMExtension -VMName $AzVMConfigVMName -ResourceGroupName $AzResourceGroup.ResourceGroupName -Location $AzLocation.Location -TypeHandlerVersion 1.0 -Publisher "Microsoft.Azure.ActiveDirectory" -ExtensionType "AADLoginForWindows" -Name "AADLogin" | Out-Null
+            Set-AzVMExtension -VMName $AzVMConfigVMName -ResourceGroupName $AzResourceGroup.ResourceGroupName -Location $AzLocation.Location -TypeHandlerVersion 1.0 -Publisher "Microsoft.Azure.ActiveDirectory" -ExtensionType "AADLoginForWindows" -Name "AADLogin" -NoWait | Out-Null
 
             # --- AzVMExtension (MicrosoftMonitoringAgent)
             "Setting AzVMExtension (MicrosoftMonitoringAgent)... " | Out-Host
-            Set-AzVMExtension -VMName $AzVMConfigVMName -ResourceGroupName $AzResourceGroup.ResourceGroupName -Location $AzLocation.Location -TypeHandlerVersion 1.0 -Publisher "Microsoft.EnterpriseCloud.Monitoring" -ExtensionType "MicrosoftMonitoringAgent" -Name "MicrosoftMonitoringAgent" | Out-Null
+            Set-AzVMExtension -VMName $AzVMConfigVMName -ResourceGroupName $AzResourceGroup.ResourceGroupName -Location $AzLocation.Location -TypeHandlerVersion 1.0 -Publisher "Microsoft.EnterpriseCloud.Monitoring" -ExtensionType "MicrosoftMonitoringAgent" -Name "MicrosoftMonitoringAgent" -NoWait | Out-Null
 
         # --- Enable RDP
         "Setting AzRoleAssignment (Virtual Machine User Login)... " | Out-Host
         $AzADGroup = Get-AzADGroup -DisplayName "All Users"
         $AzRoleDefinition = Get-AzRoleDefinition -Name "Virtual Machine User Login"
         New-AzRoleAssignment -ObjectId $AzADGroup.Id -RoleDefinitionName $AzRoleDefinition.Name -ResourceGroupName $AzResourceGroup.ResourceGroupName | Out-Null
+
+        # --- Stop AzVM
+        "Stopping AzVM... " | Out-Host
+        $AzVM | Stop-AzVM -Force | Out-Null
 
 } catch {
 
